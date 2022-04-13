@@ -53,7 +53,7 @@ describe('🚩 Challenge 2: 🏵 Token Vendor 🤖', function () {
       console.log(`\t`, '🛰 Connected to YourToken at:', yourToken.address);
     });
   } else {
-    it.skip('Should deploy Vendor', async function () {
+    it('Should deploy Vendor', async function () {
       const Vendor = await ethers.getContractFactory('Vendor');
       vendor = await Vendor.deploy(yourToken.address);
 
@@ -62,7 +62,7 @@ describe('🚩 Challenge 2: 🏵 Token Vendor 🤖', function () {
     });
   }
 
-  describe.skip('💵 buyTokens()', function () {
+  describe('💵 buyTokens()', function () {
     it('Should let us buy tokens and our balance should go up...', async function () {
       const [owner] = await ethers.getSigners();
       console.log('\t', ' 🧑‍🏫 Tester Address: ', owner.address);
@@ -84,7 +84,43 @@ describe('🚩 Challenge 2: 🏵 Token Vendor 🤖', function () {
     });
   });
 
-  describe.skip('💵 sellTokens()', function () {
+  describe.skip('💵 withdraw()', function () {
+    it('Should let owner withdraw ...', async function () {
+      const [owner] = await ethers.getSigners();
+      console.log('\t', ' 🧑‍🏫 Tester Address: ', owner.address);
+
+      let beforeBalance = await owner.getBalance();
+      console.log('beforeBalance: ', ethers.utils.formatEther(beforeBalance));
+
+      // const startingBalance = await yourToken.balanceOf(owner.address);
+      // console.log('\t', ' ⚖️ Starting balance: ', ethers.utils.formatEther(startingBalance));
+
+      console.log('\t', ' 💸 Withdrawing...');
+
+      const buyTokensResult = await vendor.buyTokens({ value: ethers.utils.parseEther('0.001') });
+      console.log('\t', ' 🏷  buyTokens Result: ', buyTokensResult.hash);
+
+      console.log('\t', ' ⏳ Waiting for confirmation...');
+      const buyTokenstxResult = await buyTokensResult.wait();
+      expect(buyTokenstxResult.status).to.equal(1);
+
+      const withdrawTokensResult = await vendor.withdraw();
+      console.log('\t', ' 🏷  buyTokens Result: ', withdrawTokensResult.hash);
+
+      console.log('\t', ' ⏳ Waiting for confirmation...');
+      const txResult = await withdrawTokensResult.wait();
+      expect(txResult.status).to.equal(1);
+
+      let afterBalance = await owner.getBalance();
+      console.log('afterBalance: ', ethers.utils.formatEther(afterBalance));
+
+      // const newBalance = await yourToken.balanceOf(owner.address);
+      // console.log('\t', ' 🔎 New balance: ', ethers.utils.formatEther(newBalance));
+      expect(Math.round(+ethers.utils.formatEther(beforeBalance))).to.equal(Math.round(+ethers.utils.formatEther(afterBalance)));
+    });
+  });
+
+  describe('💵 sellTokens()', function () {
     it('Should let us sell tokens and we should get eth back...', async function () {
       const [owner] = await ethers.getSigners();
 
