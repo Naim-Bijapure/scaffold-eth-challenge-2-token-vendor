@@ -77,7 +77,7 @@ export const YourToken: FC<IYourTokenProps> = (props) => {
     functionName: 'allowance',
     functionArgs: [address, vendorContract?.address],
   });
-  console.log('🤏 vendorApproval', vendorApproval);
+  console.log('🤏 vendorApproval', vendorApproval?.toString());
 
   const [tokenSendToAddress, setTokenSendToAddress] = useState('');
   const [tokenSendAmount, setTokenSendAmount] = useState<number>();
